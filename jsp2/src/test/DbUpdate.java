@@ -23,15 +23,8 @@ public class DbUpdate {
         		PreparedStatement statement = connection.prepareStatement(sql); ) {
 
         	connection.setAutoCommit(false);
-
-            try(PreparedStatement ps = connection.prepareStatement(sql)){
-                ps.executeUpdate();
-                connection.commit();
-            } catch (Exception e) {
-            	connection.rollback();
-                System.out.println("rollback");
-                throw e;
-            }
+        	statement.executeUpdate();
+            connection.commit();
 
 
         } catch (SQLException e) {

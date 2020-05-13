@@ -17,11 +17,15 @@ public class DbSelect {
 
     public static void main(String[] args) {
 
-        String sql = "SELECT * FROM goodsmaster;";
+        String sql = "SELECT * FROM goodsmaster Where ID = ?;";
+
+        System.out.println("URL = " + URL + "、USERNAME = " + USERNAME + "、PASSWORD = " + PASSWORD);
 
         try (	Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 
         		PreparedStatement statement = connection.prepareStatement(sql); ) {
+
+        	statement.setInt(1,1);
 
         	// 配列に結果をいれたい(途中)
 //        	ResultSet result = statement.executeQuery();
