@@ -55,12 +55,12 @@ public class DbSelect2 extends HttpServlet {
         String sql = "SELECT * FROM goodsmaster Where ID = ?;";
 
         System.out.println("forName前");
-//        try {
-//			Class.forName("com.mysql.jdbc.Driver");
-//		} catch (ClassNotFoundException e1) {
-//			// TODO 自動生成された catch ブロック
-//			e1.printStackTrace();
-//		}
+        try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e1) {
+			// TODO 自動生成された catch ブロック
+			e1.printStackTrace();
+		}
 
         System.out.println("getConnection前");
         try (	Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
