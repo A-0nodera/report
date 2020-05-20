@@ -39,7 +39,6 @@ public class ShoppingListServlet extends HttpServlet {
 		// インスタンス生成
 		Goods goods = new Goods();
 
-
 		// 個数が未入力の時、0(int)を入れる
 		number = toZero(request.getParameter("txtNumber"));
 
@@ -80,7 +79,6 @@ public class ShoppingListServlet extends HttpServlet {
 	 * @param memo
 	 */
 	public void registerGoods(String name, int number, String memo) {
-		System.out.println("登録ux-----i");
 
 	}
 

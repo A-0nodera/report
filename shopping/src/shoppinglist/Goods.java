@@ -11,17 +11,17 @@ public class Goods {
 
 	/** UUID */
 	String uuid;
-	/** UUID */
+	/** 商品名 */
 	String item;
-	/** UUID */
+	/** 個数 */
 	int number;
-	/** UUID */
+	/** メモ */
 	String memo;
-	/** UUID */
+	/** 登録日時 */
 	String registered_datetime;
-	/** UUID */
+	/** 購入日時 */
 	String purchased_datetime;
-	/** UUID */
+	/** 更新日時 */
 	String updated_datetime;
 
 	/**

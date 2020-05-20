@@ -1,4 +1,4 @@
-package shoppinglist;
+package test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,19 +8,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Actionクラス
- * テーブルSHOPPING_LISTの操作を行う
- *
- * @author onodera
- * @version バージョン 2020/05/DD 新規作成
- */
-public class ShoppingListTable {
+public class Table {
 
 	static final String URL = "jdbc:mysql://localhost/user_db?autoReconnect=true&useSSL=false";
     static final String USERNAME = "root";
     static final String PASSWORD = "aiaiaiai";
     static final String TABLENAME = "shopping_list";
+
 
 	/**
 	 * @return テーブルSHOPPING_LISTの全レコード
@@ -46,6 +40,7 @@ public class ShoppingListTable {
 		return arraySelectResult;
 	}
 
+
 	/**
 	 * @param uuid 検索条件のuuid
 	 * @return テーブルSHOPPING_LISTの引数に紐づくレコード
@@ -54,9 +49,10 @@ public class ShoppingListTable {
 
 		String sql = "SELECT * FROM " + TABLENAME + " Where UUID = " + uuid + " ;";
 		Goods goods = selectDbGoods(sql);
-		return goods;
 
+		return goods;
 	}
+
 
 	/**
 	 * @param uuid 追加するレコード
@@ -65,13 +61,7 @@ public class ShoppingListTable {
 	public Goods add(Goods goods) {
 
 		String sql = "INSERT INTO " + TABLENAME + "(UUID,ITEM,NUMBER,MEMO,REGISTERED_DATETIME,PURCHASED_DATETIME,UPDATED_DATETIME) "
-					+ "VALUES ('" + goods.uuid + "','"
-								  + goods.item + "',"
-								  + goods.number + ",'"
-								  + goods.memo + "',cast('"
-								  + goods.registered_datetime + "' as datetime),"
-								  + goods.purchased_datetime + ","
-								  + goods.updated_datetime + ");";
+					+ "VALUES ('" + goods.uuid + "','" + goods.item + "'," + goods.number + ",'" + goods.memo + "',cast('" + goods.registered_datetime + "' as datetime)," + goods.purchased_datetime + "," + goods.updated_datetime + ");";
 		System.out.println("SQL = " + sql);
 		sqlDb(sql);
 
@@ -86,7 +76,7 @@ public class ShoppingListTable {
 		String sql;
 
 		// 購入日時に値がない場合、登録ボタン押下時の更新
-		if(goods.purchased_datetime.equals("")) {
+		if(goods.purchased_datetime.equals("") || goods.purchased_datetime == null ) {
 			// 登録ボタン押下時のUpdate文
 			sql = "UPDATE " + TABLENAME
 					+ " SET "+ "ITEM = '" + goods.item
@@ -95,13 +85,18 @@ public class ShoppingListTable {
 							+ "',UPDATED_DATETIME = cast('" + goods.updated_datetime
 							+ "' as datetime)"
 					+ " WHERE UUID = " + goods.uuid + ";";
+			System.out.println("登録ボタン押下時のUpdate文 = " + sql);
 		}else {
 			// 購入済みボタン押下時のUpdate文
 			sql = "UPDATE " + TABLENAME
 					+ " SET " + "PURCHASED_DATETIME = cast('" + goods.purchased_datetime
 							 + "' as datetime)"
 					+ " WHERE UUID = " + goods.uuid + ";";
+			System.out.println("購入済みボタン押下時のUpdate文 = " + sql);
 		}
+		System.out.println("SQL = " + sql);
+		sqlDb(sql);
+
 	}
 
 	/**
@@ -114,19 +109,17 @@ public class ShoppingListTable {
 	}
 
 	/**
-	 * 結果をlistで返す
+	 * 追加更新削除用SQL実行
 	 *
-	 * @param 実行するSelect文
-	 * @return テーブルSHOPPING_LISTの全レコード
+	 * @param 実行するSql文
 	 */
-	public List<String> selectDbList(String sql) {
+	public void sqlDb(String sql) {
 
-        List<String> arraySelectResult = new ArrayList<String>();
-
-        // DB接続をします。
+		// DB接続をします。
         try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e1) {
+			// TODO 自動生成された catch ブロック
 			e1.printStackTrace();
 		}
 
@@ -134,26 +127,20 @@ public class ShoppingListTable {
         	Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         	PreparedStatement statement = connection.prepareStatement(sql); ) {
 
-        	// resultの中に結果を取得します。
-			ResultSet result = statement.executeQuery();
+        	connection.setAutoCommit(false);
 
-			int cnt = 0;
-			while (result.next()) {
-				for(int i = 1; i < 8; i++) {
-					// リストの最後に結果をいれていく
-					arraySelectResult.add(result.getString(i));
-				}
-				cnt = cnt + 1;
-			}
+        	statement.executeUpdate();
+            connection.commit();
 
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            System.out.println("処理が完了しました");
         }
+    }
 
-		return arraySelectResult;
-	}
 
 	/**
 	 * 結果をGoodsで返す
@@ -194,23 +181,28 @@ public class ShoppingListTable {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            System.out.println("処理が完了しました");
         }
 
 	return goods;
 	}
 
 	/**
-	 * 追加更新削除用SQL実行
+	 * 結果をlistで返す
 	 *
-	 * @param 実行するSql文
+	 * @param 実行するSelect文
+	 * @return テーブルSHOPPING_LISTの全レコード
 	 */
-	public void sqlDb(String sql) {
+	public List<String> selectDbList(String sql) {
 
-		// DB接続をします。
+        // リスト
+        List<String> arraySelectResult = new ArrayList<String>();
+
+        // DB接続をします。
         try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e1) {
-			// TODO 自動生成された catch ブロック
 			e1.printStackTrace();
 		}
 
@@ -218,15 +210,33 @@ public class ShoppingListTable {
         	Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         	PreparedStatement statement = connection.prepareStatement(sql); ) {
 
-        	connection.setAutoCommit(false);
+        	// resultの中に結果を取得します。
+			ResultSet result = statement.executeQuery();
 
-        	statement.executeUpdate();
-            connection.commit();
+			System.out.println("start");
+			int cnt = 0;
+			while (result.next()) {
+				for(int i = 1; i < 8; i++) {
+					// リストの最後に結果をいれていく
+					arraySelectResult.add(result.getString(i));
+				}
+				cnt = cnt + 1;
+			}
+
+			System.out.println("------------------------------------------------");
+			for(int i = 1; i < arraySelectResult.size() + 1 ; i++) {
+				System.out.println("i = " + i + "- 1 、中身 = " +arraySelectResult.get(i-1));
+			}
 
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            System.out.println("処理が完了しました");
         }
-    }
+
+		return arraySelectResult;
+	}
+
 }

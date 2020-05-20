@@ -7,7 +7,7 @@
 		<title>DBtest</title>
 	</head>
 	<body>
-		<form action="DbSelect2" method="get">
+		<form action="DbUpdate2" method="get">
 
 			<%
 			String txtGd;

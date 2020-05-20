@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/test/DbUpdate2")
 public class DbUpdate2 extends HttpServlet {
 
-    static final String URL = "jdbc:mysql://localhost/user_db";
+    static final String URL = "jdbc:mysql://localhost/user_db?autoReconnect=true&useSSL=false";
     static final String USERNAME = "root";
     static final String PASSWORD = "aiaiaiai";
 
@@ -32,7 +32,6 @@ public class DbUpdate2 extends HttpServlet {
 
 		// 初期表示でなければ更新
 		if(request.getParameter("txtGoods")!=null){
-			System.out.println("更新----------------------------------------------");
 			dbInsert();
         }
 
@@ -54,10 +53,14 @@ public class DbUpdate2 extends HttpServlet {
 
         String sql = "INSERT INTO goodsmaster(ID,name,price) VALUES (?,?,?)";
 
+        try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e1) {
+			// TODO 自動生成された catch ブロック
+			e1.printStackTrace();
+		}
+
         try (
-
-
-
         	Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         	PreparedStatement statement = connection.prepareStatement(sql); ) {
 
