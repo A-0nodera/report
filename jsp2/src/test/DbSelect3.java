@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,14 +33,72 @@ public class DbSelect3 extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("doGet");
+
+// --------- 初期表示テスト用 --------------------------------------------------------------------------------------
+
+		// インスタンス生成
+		Table table = new Table();
+
+		List<String> arraySelectResult = new ArrayList<String>();
+//		arraySelectResult = table.getAllNotYetPurchesed();
+
 		// 初期表示でなければ処理する
 		if(request.getParameter("txtGoods")!=null){
 
-			// インスタンス生成
-			Table table = new Table();
 
-// --------- Tableクラスメソッド実行用 --------------------------------------------------------------------------------------
+// ----------- 登録ボタン押下 --------------------------------------------------------------------------------------------------------
+// メソッドに分けなければ以下で登録ボタン押下時の処理ができた
+			Goods goods = new Goods();
+			// 画面の値を取得
+			goods.uuid 					= request.getParameter("hidUpdateUuid");
+			goods.item 					= request.getParameter("txtGoods");
+			goods.number 				= Integer.parseInt(request.getParameter("txtNumber"));
+			goods.memo 					= request.getParameter("txtMemo");
+
+			//
+			// 現在日時を取得
+			LocalDateTime date1 = LocalDateTime.now();
+			DateTimeFormatter dtformat1 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+			String fdate1 = dtformat1.format(date1);
+
+			System.out.println("goods.uuid = " + goods.uuid);
+			System.out.println("goods.item = " + goods.item);
+			System.out.println("goods.number = " + goods.number);
+			System.out.println("goods.memo = " + goods.memo);
+
+//			goods.uuid 					= "c829f11d-535b-45e4-bdb7-556af23a4687";
+//
+			if(goods.uuid == null) {
+				System.out.println("とうろく");
+//				// 自動採番
+//				UUID uuid = UUID.randomUUID();
+//				String str = uuid.toString();
+//
+//				goods.uuid 					= str;
+//				goods.registered_datetime 	= String.valueOf(fdate1);
+//
+//				// 実行
+//				Goods goodsre = table.add(goods);
+//
+			}else {
+				System.out.println("更新");
+//				// 購入日時でボタンを分けているので登録ボタン押下時は購入日時に""を入れること
+//				goods.purchased_datetime 	= "";						// 登録ボタン押下時の処理用
+//				goods.updated_datetime 		= String.valueOf(fdate1);
+//
+//				// 実行
+//				table.update(goods);
+//
+//				// 非表示UUIDをクリア
+//
+			}
+
+
+
+			// インスタンス生成
+//			Table table = new Table();
+//
+//// --------- Tableクラスメソッド実行用 --------------------------------------------------------------------------------------
 //			// ■getAll用
 //			List<String> arraySelectResult = new ArrayList<String>();
 //			arraySelectResult = table.getAll();
@@ -47,6 +107,7 @@ public class DbSelect3 extends HttpServlet {
 //			{
 //			    System.out.println(arraySelectResult.get(i));
 //			}
+//			request.setAttribute("list", arraySelectResult);
 
 //			// ■getAllNotYetPurchesed用
 //			List<String> arraySelectResult = new ArrayList<String>();
@@ -144,6 +205,12 @@ public class DbSelect3 extends HttpServlet {
 //			dbSelect();
         }
 
+		// 一覧再描画用
+		arraySelectResult = table.getAllNotYetPurchesed();
+		request.setAttribute("list", arraySelectResult);
+
+		request.setAttribute("hidUpdateUuid","かくし");
+
         ServletContext context = this.getServletContext();
         RequestDispatcher dispatcher = context.getRequestDispatcher("/test/DbtestSelect3.jsp");
         dispatcher.forward(request, response);
@@ -155,7 +222,6 @@ public class DbSelect3 extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		System.out.println("doPost");
 		doGet(request, response);
 	}
 

@@ -21,7 +21,8 @@ public class Table {
 	 */
 	public List<String> getAll() {
 
-		String sql = "SELECT * FROM " + TABLENAME + ";";
+		String sql = "SELECT * "
+				   + "FROM " + TABLENAME + ";";
 		List<String> arraySelectResult = new ArrayList<String>();
 		arraySelectResult = selectDbList(sql);
 
@@ -33,7 +34,10 @@ public class Table {
 	 */
 	public List<String> getAllNotYetPurchesed() {
 
-		String sql = "SELECT * FROM " + TABLENAME + " WHERE PURCHASED_DATETIME IS NULL;";
+		String sql = "SELECT * "
+				   + "FROM " + TABLENAME
+				   + " WHERE purchased_datetime IS NULL "
+				   + "ORDER BY registered_datetime ASC;";
 		List<String> arraySelectResult = new ArrayList<String>();
 		arraySelectResult = selectDbList(sql);
 
@@ -84,14 +88,14 @@ public class Table {
 							+ ",MEMO = '" + goods.memo
 							+ "',UPDATED_DATETIME = cast('" + goods.updated_datetime
 							+ "' as datetime)"
-					+ " WHERE UUID = " + goods.uuid + ";";
+					+ " WHERE UUID = '" + goods.uuid + "';";
 			System.out.println("登録ボタン押下時のUpdate文 = " + sql);
 		}else {
 			// 購入済みボタン押下時のUpdate文
 			sql = "UPDATE " + TABLENAME
 					+ " SET " + "PURCHASED_DATETIME = cast('" + goods.purchased_datetime
 							 + "' as datetime)"
-					+ " WHERE UUID = " + goods.uuid + ";";
+					+ " WHERE UUID = '" + goods.uuid + "';";
 			System.out.println("購入済みボタン押下時のUpdate文 = " + sql);
 		}
 		System.out.println("SQL = " + sql);
@@ -221,11 +225,6 @@ public class Table {
 					arraySelectResult.add(result.getString(i));
 				}
 				cnt = cnt + 1;
-			}
-
-			System.out.println("------------------------------------------------");
-			for(int i = 1; i < arraySelectResult.size() + 1 ; i++) {
-				System.out.println("i = " + i + "- 1 、中身 = " +arraySelectResult.get(i-1));
 			}
 
         } catch (SQLException e) {

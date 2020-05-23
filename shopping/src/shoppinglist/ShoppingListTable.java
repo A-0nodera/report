@@ -27,7 +27,8 @@ public class ShoppingListTable {
 	 */
 	public List<String> getAll() {
 
-		String sql = "SELECT * FROM " + TABLENAME + ";";
+		String sql = "SELECT * "
+				   + "FROM " + TABLENAME + ";";
 		List<String> arraySelectResult = new ArrayList<String>();
 		arraySelectResult = selectDbList(sql);
 
@@ -39,7 +40,10 @@ public class ShoppingListTable {
 	 */
 	public List<String> getAllNotYetPurchesed() {
 
-		String sql = "SELECT * FROM " + TABLENAME + " WHERE PURCHASED_DATETIME IS NULL;";
+		String sql = "SELECT * "
+				   + "FROM " + TABLENAME
+				   + " WHERE purchased_datetime IS NULL "
+				   + "ORDER BY registered_datetime ASC;";
 		List<String> arraySelectResult = new ArrayList<String>();
 		arraySelectResult = selectDbList(sql);
 
@@ -94,13 +98,13 @@ public class ShoppingListTable {
 							+ ",MEMO = '" + goods.memo
 							+ "',UPDATED_DATETIME = cast('" + goods.updated_datetime
 							+ "' as datetime)"
-					+ " WHERE UUID = " + goods.uuid + ";";
+					+ " WHERE UUID = '" + goods.uuid + "';";
 		}else {
 			// 購入済みボタン押下時のUpdate文
 			sql = "UPDATE " + TABLENAME
 					+ " SET " + "PURCHASED_DATETIME = cast('" + goods.purchased_datetime
 							 + "' as datetime)"
-					+ " WHERE UUID = " + goods.uuid + ";";
+					+ " WHERE UUID = '" + goods.uuid + "';";
 		}
 	}
 

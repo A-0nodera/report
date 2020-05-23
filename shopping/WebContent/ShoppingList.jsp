@@ -10,7 +10,11 @@
 		<form action="ShoppingListServlet" method="get">
 			<table>
 	    		<tr>
-	        		<td>　</td><td>商品名</td><td>個数</td><td>メモ</td><td><label id="hidUpdateUuid" hidden></label></td>
+	        		<td>　</td>
+	        		<td>商品名</td>
+	        		<td>個数</td>
+	        		<td>メモ</td>
+	        		<td><INPUT id="hidUpdateUuid"  name="hidUpdateUuid" value=<%= txtId %> hidden><label id="hidUpdateUuid" name="hidUpdateUuid" hidden ><%= txtId %>></label></td>
 				</tr>
 				<tr>
 				<td>
