@@ -1,8 +1,7 @@
 package shoppinglist;
 
 /**
- * Actionクラス
- * テーブルSHOPPING_LISTの操作を行う
+ * Operate the table SHOPPING_LIST
  *
  * @author onodera
  * @version バージョン 2020/05/DD 新規作成
@@ -12,7 +11,7 @@ public class Goods {
 	/** UUID */
 	String uuid;
 	/** 商品名 */
-	String item;
+	String name;
 	/** 個数 */
 	int number;
 	/** メモ */
@@ -25,7 +24,7 @@ public class Goods {
 	String updated_datetime;
 
 	/**
-	 * デフォルトコンストラクタ
+	 * default constructor
 	 */
 	void goods() {
 
@@ -33,7 +32,7 @@ public class Goods {
 	}
 
 	/**
-	 * @return 画面のuuid
+	 * @return uuid the uuid to hold
 	 */
 	public String gatUuid() {
 
@@ -42,15 +41,15 @@ public class Goods {
 	}
 
 	/**
-	 * @return 画面の商品名
+	 * @return item the item to hold
 	 */
 	public String gatItem() {
 
-		return item;
+		return name;
 	}
 
 	/**
-	 * @return 画面の個数
+	 * @return number the number to hold
 	 */
 	public int gatNumber() {
 
@@ -58,7 +57,7 @@ public class Goods {
 	}
 
 	/**
-	 * @return 画面のメモ
+	 * @return memo the memo to hold
 	 */
 	public String getMemo() {
 
@@ -66,7 +65,7 @@ public class Goods {
 	}
 
 	/**
-	 * @return 画面の登録日時
+	 * @return registered_datetime the registered_datetime to hold
 	 */
 	public String getRegistered_datetime() {
 
@@ -74,7 +73,7 @@ public class Goods {
 	}
 
 	/**
-	 * @return 画面の購入日時
+	 * @return purchased_datetime the purchased_datetime to hold
 	 */
 	public String getPurchased_datetime() {
 
@@ -82,7 +81,7 @@ public class Goods {
 	}
 
 	/**
-	 * @return 画面の更新日時
+	 * @return updated_datetime the updated_datetime to hold
 	 */
 	public String getUpdated_datetime() {
 

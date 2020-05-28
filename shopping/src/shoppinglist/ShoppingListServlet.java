@@ -28,17 +28,14 @@ public class ShoppingListServlet extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ShoppingListServlet() {
+	public ShoppingListServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-//		response.getWriter().append("Served at: ").append(request.getContextPath());
 		int number;
 
 		ShoppingListTable table = new ShoppingListTable();
@@ -48,54 +45,80 @@ public class ShoppingListServlet extends HttpServlet {
 		List<String> arraySelectResult = new ArrayList<String>();
 		arraySelectResult = table.getAllNotYetPurchesed();
 
-		// 画面の値を取得
-		goods.uuid 					= request.getParameter("hidUpdateUuid");
-		goods.item 					= request.getParameter("txtGoods");
-		goods.number 				= Integer.parseInt(request.getParameter("txtNumber"));
-		goods.memo 					= request.getParameter("txtMemo");
-		// 後で消す
-		goods.uuid 					= "c829f11d-535b-45e4-bdb7-556af23a4687";
-
-
 		// 個数が未入力の時、0(int)を入れる
-		number = toZero(request.getParameter("txtNumber"));
+		if(request.getParameter("txtNumber") == null) {
+			number = toZero(request.getParameter("txtNumber"));
+		}else{
+			number = Integer.parseInt(request.getParameter("txtNumber"));
+		}
 
-		// 押下ボタンによって処理を分ける
-		if(request.getParameter("btnRegister") != null){			// 登録ボタン
-			System.out.println("登録");
+		// テキストボックスの初期表示
+		request.setAttribute("hidUpdateUuid", "");
+		request.setAttribute("txtGoods", "");
+		request.setAttribute("txtNumber", 0);
+		request.setAttribute("txtMemo", "");
 
-			if(goods.uuid == null) {
-				// 登録
-				registerGoods(goods.item, goods.number, goods.memo);
-			}else {
-				// 更新
+		// 各ボタンのvalueを取得
+		String btnRegisterVal = request.getParameter("btnRegister");
+		String setBtnPurchaseVal = request.getParameter("setBtnPurchase");
+		String setBtnDeleteVal = request.getParameter("setBtnDelete");
+		String setBtnUpdateVal = request.getParameter("setBtnUpdate");
 
-				// 非表示UUIDをクリア
-				request.setAttribute("hidUpdateUuid","");
+		// 初期表示時は行わない
+		if(btnRegisterVal != null || setBtnPurchaseVal != null || setBtnDeleteVal != null || setBtnUpdateVal != null) {
 
+			// nullの場合""を入れる
+			if(btnRegisterVal == null) {
+				btnRegisterVal = "";
+			}
+			if(setBtnPurchaseVal == null) {
+				setBtnPurchaseVal = "";
+			}
+			if(setBtnDeleteVal == null) {
+				setBtnDeleteVal = "";
+			}
+			if(setBtnUpdateVal == null) {
+				setBtnUpdateVal = "";
 			}
 
+			// 押下ボタンによって処理を分ける
+			if(btnRegisterVal.equals("register")){			// 登録ボタン
 
+				if(request.getParameter("hidUpdateUuid") == "") {
+					// 登録
+					registerGoods(request.getParameter("txtGoods"), number, request.getParameter("txtMemo"));
 
-		}else if(request.getParameter("btnPurchase") != null) {		// 購入済ボタン
-			System.out.println("購入済");
+				}else {
+					// 更新
+					updateGoods(request.getParameter("hidUpdateUuid"), request.getParameter("txtGoods"), number, request.getParameter("txtMemo"));
+					// 非表示UUIDをクリア
+					request.setAttribute("hidUpdateUuid", "");
 
-		}else if(request.getParameter("btnUpdate") != null) {		// 修正ボタン
-			System.out.println("修正");
-			updateGoods(request.getParameter("hidUpdateUuid"), request.getParameter("txtGoods"), Integer.parseInt(request.getParameter("txtNumber")), request.getParameter("txtMemo"));
+				}
+			}else if(setBtnPurchaseVal.equals("btnPurchase")) {	// 購入済ボタン
 
-		}else if(request.getParameter("btnDelete") != null) {		// 削除ボタン
-			System.out.println("削除");
+				purchaseGoods(request.getParameter("setUuid"));
 
+			}else if(setBtnDeleteVal.equals("btnDelete")) {		// 削除ボタン
+
+				deleteGoods(request.getParameter("setUuid"));
+
+			}else if(setBtnUpdateVal.equals("btnUpdate")) {		// 修正ボタン
+				// テキストボックス表示
+				request.setAttribute("hidUpdateUuid", request.getParameter("setUuid"));		// uuid
+				request.setAttribute("txtGoods", request.getParameter("setName"));			// 商品名
+				request.setAttribute("txtNumber", request.getParameter("setNumber"));		// 個数
+				request.setAttribute("txtMemo", request.getParameter("setMemo"));			// メモ
+			}
 		}
 
 		// 一覧再描画用
 		arraySelectResult = table.getAllNotYetPurchesed();
 		request.setAttribute("list", arraySelectResult);
 
-        ServletContext context = this.getServletContext();
-        RequestDispatcher dispatcher = context.getRequestDispatcher("/ShoppingList.jsp");
-        dispatcher.forward(request, response);
+		ServletContext context = this.getServletContext();
+		RequestDispatcher dispatcher = context.getRequestDispatcher("/ShoppingList.jsp");
+		dispatcher.forward(request, response);
 
 	}
 
@@ -103,23 +126,30 @@ public class ShoppingListServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
 
 	/**
-	 * @param name
-	 * @param number
-	 * @param memo
+	 * Registers or update when the purchased button is pressed.
+	 *
+	 * @param name the name at which to insert or update
+	 * @param number  the number at which to insert or update
+	 * @param memo  the memo at which to insert or update
 	 */
 	public void registerGoods(String name, int number, String memo) {
 
 		Goods goods = new Goods();
+		ShoppingListTable table = new ShoppingListTable();
+
+		// 画面の値をセット
+		goods.name 		= name;
+		goods.number 	= number;
+		goods.memo 		= memo;
+
 		// 現在日時を取得
 		LocalDateTime date1 = LocalDateTime.now();
 		DateTimeFormatter dtformat1 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 		String fdate1 = dtformat1.format(date1);
-
 
 		// 自動採番
 		UUID uuid = UUID.randomUUID();
@@ -129,40 +159,76 @@ public class ShoppingListServlet extends HttpServlet {
 		goods.registered_datetime 	= String.valueOf(fdate1);
 
 		// 実行
-//		Goods goodsre = table.add(goods);
-
+		Goods goodsre = table.add(goods);
 
 	}
 
 	/**
-	 * @param uuid
-	 * @param name
-	 * @param number
-	 * @param memo
+	 * @param uuid the uuid at which to insert or update
+	 * @param name the name at which to insert or update
+	 * @param number the number at which to insert or update
+	 * @param memo the memo at which to insert or update
 	 */
 	public void updateGoods(String uuid, String name, int number, String memo) {
 
+		Goods goods = new Goods();
+		ShoppingListTable table = new ShoppingListTable();
 
+		// 画面の値をセット
+		goods.uuid 		= uuid;
+		goods.name 		= name;
+		goods.number 	= number;
+		goods.memo 		= memo;
+
+		// 現在日時を取得
+		LocalDateTime date1 = LocalDateTime.now();
+		DateTimeFormatter dtformat1 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		String fdate1 = dtformat1.format(date1);
+
+		goods.purchased_datetime 	= "";
+		goods.updated_datetime 	= String.valueOf(fdate1);
+
+		// 更新
+		table.update(goods);
 	}
 
 	/**
-	 * @param uuid
+	 * @param uuid the uuid at which to select
 	 */
 	public void deleteGoods(String uuid) {
 
+		ShoppingListTable table = new ShoppingListTable();
+
+		// 削除
+		table.delete(uuid);
 
 	}
 
 	/**
-	 * @param uuid
+	 * @param uuid the uuid at which to select
 	 */
 	public void purchaseGoods(String uuid) {
 
+		Goods goods = new Goods();
+		ShoppingListTable table = new ShoppingListTable();
+
+		// 画面の値をセット
+		goods.uuid = uuid;
+
+		// 現在日時を取得
+		LocalDateTime date1 = LocalDateTime.now();
+		DateTimeFormatter dtformat1 = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		String fdate1 = dtformat1.format(date1);
+
+		goods.purchased_datetime 	= String.valueOf(fdate1);
+
+		// 更新
+		table.update(goods);
 
 	}
 
 	/**
-	 * @param uuid
+	 * @param uuid the uuid at which to select
 	 */
 	public int toZero(String number) {
 

@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"shoppinglist","h":"","u":""},{"l":"すべてのパッケージ","h":"","u":"allpackages-index.html"}]
